@@ -32,6 +32,13 @@ describe('AppController', () => {
     });
   });
 
+  describe('listUrlsByOwner', () => {
+    it('should return urls owned by a user', async () => {
+      const urls = await appController.listUrlsByOwner({ user: TEST_USER });
+      expect(urls.length).toBe(1);
+    });
+  });
+
   describe('dispose', function () {
     it('should close the Neo4j driver', async function () {
       await neo4jService.dispose();

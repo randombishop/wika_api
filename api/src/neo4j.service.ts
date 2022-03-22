@@ -50,9 +50,9 @@ export class Neo4jService {
       throw 'Relation must be LIKES or OWNS';
     }
     const cql =
-      'MATCH (user:User)-[' +
+      'MATCH (user:User)-[r:' +
       relation +
-      ']->(url:Url) where user.address=$user return distinct url';
+      ']->(url:Url) where user.address=$user return url';
     const params = { user: user };
     const data = await this.fetch(cql, params);
     const urls = data.map((x) => new Url(x));
@@ -65,7 +65,7 @@ export class Neo4jService {
    * @returns urls as URL instances
    */
   async listUrlsByLiker(user: string): Promise<Url[]> {
-    return listUrlsByUserRelation(user, 'LIKES');
+    return this.listUrlsByUserRelation(user, 'LIKES');
   }
 
   /**
@@ -74,7 +74,7 @@ export class Neo4jService {
    * @returns urls as URL instances
    */
   async listUrlsByOwner(user: string): Promise<Url[]> {
-    return listUrlsByUserRelation(user, 'OWNS');
+    return this.listUrlsByUserRelation(user, 'OWNS');
   }
 
   /**
