@@ -1,10 +1,9 @@
-import { Controller, Get, Param} from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { Neo4jService } from './neo4j.service';
-import Url from "./types/url";
+import Url from './types/url';
 
 @Controller()
 export class AppController {
-
   constructor(private readonly neo4jService: Neo4jService) {}
 
   @Get('/ping')
@@ -18,5 +17,9 @@ export class AppController {
     return this.neo4jService.listUrlsByLiker(user);
   }
 
-
+  @Get('/user/:user/owned_urls')
+  listUrlsByOwner(@Param() params): Promise<Url[]> {
+    const user = params.user;
+    return this.neo4jService.listUrlsByOwner(user);
+  }
 }

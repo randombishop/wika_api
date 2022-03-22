@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import neo4j from "neo4j-driver";
-import Driver from "neo4j-driver/lib/driver.js";
-import Url from "./types/url";
+import neo4j from 'neo4j-driver';
+import Driver from 'neo4j-driver/lib/driver.js';
+import Url from './types/url';
 
 /**
  * Data Access utils for the Neo4j database
@@ -9,7 +9,6 @@ import Url from "./types/url";
  */
 @Injectable()
 export class Neo4jService {
-
   private driver: Driver;
 
   /**
@@ -33,11 +32,31 @@ export class Neo4jService {
     const session = this.driver.session();
     const result = await session.run(cql, params);
     const records = [];
-    for (var i=0 ; i<result.records.length; i++) {
+    for (let i = 0; i < result.records.length; i++) {
       records.push(result.records[i].get(0).properties);
     }
     await session.close();
     return records;
+  }
+
+  /**
+   * List the URLs liked or owned by a user
+   * @param user - Address of the user
+   * @param relation - either `LIKES` or `OWNS`
+   * @returns urls as URL instances
+   */
+  async listUrlsByUserRelation(user: string, relation: string): Promise<Url[]> {
+    if (relation != 'OWNS' && relation != 'LIKES') {
+      throw 'Relation must be LIKES or OWNS';
+    }
+    const cql =
+      'MATCH (user:User)-[' +
+      relation +
+      ']->(url:Url) where user.address=$user return distinct url';
+    const params = { user: user };
+    const data = await this.fetch(cql, params);
+    const urls = data.map((x) => new Url(x));
+    return urls;
   }
 
   /**
@@ -46,11 +65,16 @@ export class Neo4jService {
    * @returns urls as URL instances
    */
   async listUrlsByLiker(user: string): Promise<Url[]> {
-    const cql = "MATCH (user:User)-[LIKES]->(url:Url) where user.address=$user return distinct url";
-    const params = { user: user };
-    const data = await this.fetch(cql, params);
-    const urls = data.map(x => new Url(x));
-    return urls;
+    return listUrlsByUserRelation(user, 'LIKES');
+  }
+
+  /**
+   * List the URLs owned by a user
+   * @param user - Address of the user
+   * @returns urls as URL instances
+   */
+  async listUrlsByOwner(user: string): Promise<Url[]> {
+    return listUrlsByUserRelation(user, 'OWNS');
   }
 
   /**
@@ -59,5 +83,4 @@ export class Neo4jService {
   async dispose(): Promise<void> {
     await this.driver.close();
   }
-
 }
