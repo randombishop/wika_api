@@ -5,6 +5,6 @@ import { Neo4jService } from './neo4j.service';
 @Module({
   imports: [],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [Neo4jService],
 })
 export class AppModule {}
