@@ -1,5 +1,6 @@
 import { Controller, Get, Param} from '@nestjs/common';
 import { Neo4jService } from './neo4j.service';
+import Url from "./types/url";
 
 @Controller()
 export class AppController {
@@ -12,7 +13,7 @@ export class AppController {
   }
 
   @Get('/user/:user/liked_urls')
-  listUrlsByLiker(@Param() params): Promise<any[]> {
+  listUrlsByLiker(@Param() params): Promise<Url[]> {
     const user = params.user;
     return this.neo4jService.listUrlsByLiker(user);
   }

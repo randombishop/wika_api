@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import neo4j from "neo4j-driver";
 import Driver from "neo4j-driver/lib/driver.js";
+import Url from "./types/url";
 
 /**
  * Data Access utils for the Neo4j database
@@ -44,11 +45,19 @@ export class Neo4jService {
    * @param user - Address of the user
    * @returns urls as URL instances
    */
-  async listUrlsByLiker(user: string) {
+  async listUrlsByLiker(user: string): Promise<Url[]> {
     const cql = "MATCH (user:User)-[LIKES]->(url:Url) where user.address=$user return distinct url";
     const params = { user: user };
     const data = await this.fetch(cql, params);
-    return data;
+    const urls = data.map(x => new Url(x));
+    return urls;
+  }
+
+  /**
+   * Releases the Neo4J driver
+   */
+  async dispose(): Promise<void> {
+    await this.driver.close();
   }
 
 }
