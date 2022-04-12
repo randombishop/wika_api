@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import UrlSearch from './types/url_search';
-import fetch from "node-fetch";
+import fetch from 'node-fetch';
 
 /**
  * Data Access utils for the Neo4j database
@@ -29,7 +29,10 @@ export class ElasticSearchService {
    * @returns JSON result parsed as a javascript dictionary
    */
   async callApiAndGetResult(path, config) {
-    config.headers = { Authorization: this.auth, "Content-Type": "application/json" }
+    config.headers = {
+      Authorization: this.auth,
+      'Content-Type': 'application/json',
+    };
     const response = await fetch(this.host + path, config);
     const data = await response.json();
     return data;
@@ -42,16 +45,16 @@ export class ElasticSearchService {
    */
   async searchUrls(query: string) {
     const data = {
-      "query": {
-        "query_string": {
-          "query": query
-        }
-      }
-    }
-    const rest_path = "/url/_search" ;
+      query: {
+        query_string: {
+          query: query,
+        },
+      },
+    };
+    const rest_path = '/url/_search';
     const rest_config = {
-      method: "post",
-      body: JSON.stringify(data)
+      method: 'post',
+      body: JSON.stringify(data),
     };
     const response = await this.callApiAndGetResult(rest_path, rest_config);
     const result = new UrlSearch(response);

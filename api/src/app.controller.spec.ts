@@ -8,7 +8,7 @@ const TEST_USER = 'aaaaaaaaaaaaaaa';
 describe('AppController', () => {
   let appController: AppController;
   let neo4jService: Neo4jService;
-  let esService: ElasticSearchService;
+  //let esService: ElasticSearchService;
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({

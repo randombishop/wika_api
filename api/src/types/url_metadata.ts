@@ -5,15 +5,15 @@ export default class UrlMetadata {
   public description: string;
   public icon: string;
   public updatedAt: Date;
-  public score: Number;
+  public score: number;
 
   constructor(data) {
     this.id = data._id;
     this.url = data._source.url;
-    this.title = data._source.title ;
-    this.description = data._source.description ;
-    this.icon = data._source.icon ;
-    this.updatedAt = data._source.updatedAt ;
+    this.title = data._source.title;
+    this.description = data._source.description;
+    this.icon = data._source.icon;
+    this.updatedAt = data._source.updatedAt;
     this.score = data._score;
   }
 }
