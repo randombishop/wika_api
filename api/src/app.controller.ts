@@ -41,6 +41,13 @@ export class AppController {
     const connectedUrls = await this.neo4j.listUrlsByNetwork(user);
     console.log('connectedUrls');
     console.log(connectedUrls);
-    return user;
+    if (connectedUrls && connectedUrls.length > 0) {
+      const hashUrls = connectedUrls.map((x) => this.es.getUrlHash(x.url));
+      console.log('hashUrls');
+      console.log(hashUrls);
+      return user;
+    } else {
+      return null;
+    }
   }
 }

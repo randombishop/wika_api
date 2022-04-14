@@ -2,6 +2,10 @@ import { Injectable } from '@nestjs/common';
 import UrlSearch from './types/url_search';
 import fetch from 'node-fetch';
 
+// for some reason, `import crypto from "crypto" doesn't work`
+/* eslint @typescript-eslint/no-var-requires: "off" */
+const crypto = require('crypto');
+
 /**
  * Data Access utils for the Neo4j database
  *
@@ -20,6 +24,15 @@ export class ElasticSearchService {
     const password = process.env.ES_PASS;
     const buff = new Buffer(user + ':' + password);
     this.auth = 'Basic ' + buff.toString('base64');
+  }
+
+  /**
+   * Converts a URL into a MD5 hash to be used as the unique id for the webpage
+   * @param url - Webpage url
+   * @returns MD5 hash as a string
+   */
+  getUrlHash(url: string) {
+    return crypto.createHash('md5').update(url).digest('hex');
   }
 
   /**

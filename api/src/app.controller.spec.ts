@@ -8,11 +8,13 @@ import Url from './types/url';
 const TEST_USER = 'aaaaaaaaaaaaaaa';
 const TEST_QUERY1 = 'test';
 const TEST_QUERY2 = '(test) OR (wika)';
+const TEST_URL = 'https://www.wika.network/';
+const TEST_URL_MD5 = '0b616d66133e1e57e216fa16ab5b6847';
 
 describe('AppController', () => {
   let appController: AppController;
   let neo4jService: Neo4jService;
-  //let esService: ElasticSearchService;
+  let esService: ElasticSearchService;
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
@@ -22,7 +24,7 @@ describe('AppController', () => {
 
     appController = app.get<AppController>(AppController);
     neo4jService = app.get<Neo4jService>(Neo4jService);
-    //esService = app.get<ElasticSearchService>(ElasticSearchService);
+    esService = app.get<ElasticSearchService>(ElasticSearchService);
   });
 
   describe('ping', () => {
@@ -31,7 +33,7 @@ describe('AppController', () => {
     });
   });
 
-  describe('neo4jService', () => {
+  describe('Neo4jService', () => {
     describe('fetch', () => {
       it('should fetch data from the neo4j database as nodes', async () => {
         const cql = 'MATCH (n) RETURN n LIMIT 5';
@@ -65,6 +67,15 @@ describe('AppController', () => {
       it('should return 2 connected URLs for the test user', async () => {
         const urls = await neo4jService.listUrlsByNetwork(TEST_USER);
         expect(urls.length).toBe(2);
+      });
+    });
+  });
+
+  describe('ElasticSearchService', () => {
+    describe('getUrlHash', () => {
+      it('should hash an URL using MD5', () => {
+        const hash = esService.getUrlHash(TEST_URL);
+        expect(hash).toBe(TEST_URL_MD5);
       });
     });
   });
