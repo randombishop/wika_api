@@ -27,7 +27,7 @@ export class Neo4jService {
    * @param params - Parameters of the CQL query as a dictionary, for example `{url: 'https://example.com'}`
    * @returns results as javascript dictionary if available, null otherwise
    */
-  async fetch(cql: string, params: object) {
+  async fetch(cql: string, params: object = null) {
     //console.log(cql,params) ;
     const session = this.driver.session();
     const result = await session.run(cql, params);
@@ -37,6 +37,23 @@ export class Neo4jService {
     }
     await session.close();
     return records;
+  }
+
+  /**
+   * Runs a CQL query using `fetch` function
+   * and converts results to Url instances
+   * @param cql - CQL query, for example `MATCH (a:Url {url: $url}) RETURN a`
+   * @param params - Parameters of the CQL query as a dictionary, for example `{url: 'https://example.com'}`
+   * @returns results as Url instances, null otherwise
+   */
+  async fetch2url(cql: string, params: object=null) {
+    const data = await this.fetch(cql, params);
+    if (data) {
+      const urls = data.map((x) => new Url(x));
+      return urls;
+    } else {
+      return null;
+    }
   }
 
   /**
@@ -54,9 +71,7 @@ export class Neo4jService {
       relation +
       ']->(url:Url) where user.address=$user return url';
     const params = { user: user };
-    const data = await this.fetch(cql, params);
-    const urls = data.map((x) => new Url(x));
-    return urls;
+    return this.fetch2url(cql, params);
   }
 
   /**
@@ -75,6 +90,21 @@ export class Neo4jService {
    */
   async listUrlsByOwner(user: string): Promise<Url[]> {
     return this.listUrlsByUserRelation(user, 'OWNS');
+  }
+
+  /**
+   * List the URLs related to users who like or own common URLs with the target address
+   * @param user - Address of the user
+   * @returns urls as URL instances
+   */
+  async listUrlsByNetwork(user: string): Promise<Url[]> {
+    const cql = `
+        MATCH (user1:User{address:$user})-[]->(url1:Url)<-[]-(user2:User)-[]->(url2:Url)
+        RETURN distinct url2
+        ORDER BY url2.numLikes DESC
+        LIMIT 100 ;`;
+    const params = { user: user };
+    return this.fetch2url(cql, params);
   }
 
   /**

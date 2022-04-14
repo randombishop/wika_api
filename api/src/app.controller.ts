@@ -33,4 +33,14 @@ export class AppController {
     const query = params.query;
     return this.es.searchUrls(query);
   }
+
+  @Get('/user/:user/recommend')
+  async recommend(@Param() params): Promise<string> {
+    console.log('recommend');
+    const user = params.user;
+    const connectedUrls = await this.neo4j.listUrlsByNetwork(user);
+    console.log('connectedUrls');
+    console.log(connectedUrls);
+    return user;
+  }
 }

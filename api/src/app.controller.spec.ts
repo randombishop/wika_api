@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
 import { Neo4jService } from './neo4j.service';
 import { ElasticSearchService } from './elastic.service';
+import Url from './types/url';
 
 const TEST_USER = 'aaaaaaaaaaaaaaa';
 const TEST_QUERY1 = 'test';
@@ -28,6 +29,46 @@ describe('AppController', () => {
     it('should return "pong"', () => {
       expect(appController.ping()).toBe('pong');
     });
+  });
+
+  describe('neo4jService', () => {
+
+    describe('fetch', () => {
+        it('should fetch data from the neo4j database as nodes', async () => {
+          const cql = 'MATCH (n) RETURN n LIMIT 5';
+          const urls = await neo4jService.fetch(cql);
+          expect(urls.length).toBe(5);
+        });
+    });
+
+    describe('fetch2url', () => {
+        it('should fetch data from the neo4j database as nodes', async () => {
+          const cql = 'MATCH (n) RETURN n LIMIT 5';
+          const urls = await neo4jService.fetch2url(cql);
+          expect(urls.length).toBe(5);
+          expect(urls[0] instanceof Url);
+        });
+    });
+
+    describe('listUrlsByUserRelation', () => {
+        it('should throw an error if relation is not LIKES or OWNS', async () => {
+          let test = null ;
+          try {
+            test = await neo4jService.listUrlsByUserRelation(TEST_USER, 'TEST');
+          } catch (e) {
+            expect(e).toBe("Relation must be LIKES or OWNS");
+          }
+          expect(test).toBeNull();
+        });
+    });
+
+    describe('listUrlsByNetwork', () => {
+        it('should return 2 connected URLs for the test user', async () => {
+          const urls = await neo4jService.listUrlsByNetwork(TEST_USER);
+          expect(urls.length).toBe(2);
+        });
+    });
+
   });
 
   describe('listUrlsByLiker', () => {
@@ -57,6 +98,12 @@ describe('AppController', () => {
       const result2 = await appController.searchUrls({ query: TEST_QUERY2 });
       const numHits2 = result2.numHits;
       expect(numHits2).toBeGreaterThan(numHits1);
+    });
+  });
+
+  describe('recommend', () => {
+    it('should return a list of recommendations for a user', async () => {
+      const urls = await appController.recommend({ user: TEST_USER });
     });
   });
 
