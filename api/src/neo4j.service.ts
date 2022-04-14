@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import neo4j from 'neo4j-driver';
 import Driver from 'neo4j-driver/lib/driver.js';
 import Url from './types/url';
+import UrlSearch from './types/url_search';
 
 /**
  * Data Access utils for the Neo4j database
@@ -22,13 +23,25 @@ export class Neo4jService {
   }
 
   /**
-   * Runs a CQL query and returns results
+   * Runs a CQL query and returns the results as-is
    * @param cql - CQL query, for example `MATCH (a:Url {url: $url}) RETURN a`
    * @param params - Parameters of the CQL query as a dictionary, for example `{url: 'https://example.com'}`
-   * @returns results as javascript dictionary if available, null otherwise
+   * @returns results returned by Neo4j driver as-is
    */
-  async fetch(cql: string, params: object = null) {
-    //console.log(cql,params) ;
+  async fetchRecords(cql: string, params: object = null) {
+    const session = this.driver.session();
+    const result = await session.run(cql, params);
+    await session.close();
+    return result.records;
+  }
+
+  /**
+   * Runs a CQL query and returns results parsed as a single node properties per row
+   * @param cql - CQL query, for example `MATCH (a:Url {url: $url}) RETURN a`
+   * @param params - Parameters of the CQL query as a dictionary, for example `{url: 'https://example.com'}`
+   * @returns results an array of javascript dictionaries
+   */
+  async fetchProperties(cql: string, params: object = null) {
     const session = this.driver.session();
     const result = await session.run(cql, params);
     const records = [];
@@ -47,7 +60,7 @@ export class Neo4jService {
    * @returns results as Url instances, null otherwise
    */
   async fetch2url(cql: string, params: object = null) {
-    const data = await this.fetch(cql, params);
+    const data = await this.fetchProperties(cql, params);
     if (data) {
       const urls = data.map((x) => new Url(x));
       return urls;
@@ -105,6 +118,47 @@ export class Neo4jService {
         LIMIT 100 ;`;
     const params = { user: user };
     return this.fetch2url(cql, params);
+  }
+
+  /**
+   * Gets the number of Likes associated with a user to each URL in the input array
+   * @param urls - Array of urls to lookup
+   * @param user - Address of the user
+   * @returns a dictionary containing {url: numLikes}
+   */
+  async getUserNumLikes(urls: string[], user: string) {
+    const cql = `
+        MATCH (usr:User)-[r:LIKES]->(url:Url)
+        WHERE usr.address = $user
+        AND url.url in $urls
+        RETURN url.url, r.numLikes ;`;
+    const params = { user: user , urls: urls};
+    const records = await this.fetchRecords(cql, params);
+    const ans = {};
+    for (let i = 0; i < records.length; i++) {
+      ans[records[i].get(0)] = records[i].get(1);
+    }
+    return ans;
+  }
+
+  /**
+   * Gets the total number of Likes for each URL in the list
+   * The function modifies the object inplace and doesn't return anything
+   * @param urls - Array of urls to lookup
+   * @returns a dictionary containing {url: numLikes}
+   */
+  async getTotalNumLikes(urls: string[]) {
+    const cql = `
+        MATCH (url:Url)
+        WHERE url.url in $urls
+        RETURN url.url, url.numLikes ;`;
+    const params = { urls: urls };
+    const records = await this.fetchRecords(cql, params);
+    const ans = {};
+    for (let i = 0; i < records.length; i++) {
+      ans[records[i].get(0)] = records[i].get(1);
+    }
+    return ans;
   }
 
   /**

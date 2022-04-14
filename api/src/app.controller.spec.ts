@@ -9,8 +9,11 @@ const TEST_USER1 = 'aaaaaaaaaaaaaaa';
 const TEST_USER2 = 'bbbbbbbbbbbbbbb';
 const TEST_QUERY1 = 'test';
 const TEST_QUERY2 = '(test) OR (wika)';
-const TEST_URL = 'https://www.test.com/';
-const TEST_URL_MD5 = '5ba534e2895f5119fc0bcab447a61104';
+const TEST_URL1 = 'https://www.wika.network/';
+const TEST_URL1_MD5 = '0b616d66133e1e57e216fa16ab5b6847';
+const TEST_URL2 = 'https://www.test.com/';
+const TEST_URL2_MD5 = '5ba534e2895f5119fc0bcab447a61104';
+
 
 describe('AppController', () => {
   let appController: AppController;
@@ -35,11 +38,21 @@ describe('AppController', () => {
   });
 
   describe('Neo4jService', () => {
-    describe('fetch', () => {
-      it('should fetch data from the neo4j database as nodes', async () => {
+
+    describe('fetchRecords', () => {
+      it('should fetch data from the neo4j database as rows', async () => {
         const cql = 'MATCH (n) RETURN n LIMIT 5';
-        const urls = await neo4jService.fetch(cql);
-        expect(urls.length).toBe(5);
+        const rows = await neo4jService.fetchRecords(cql);
+        expect(rows.length).toBe(5);
+      });
+    });
+
+    describe('fetchProperties', () => {
+      it('should fetch data from the neo4j database as node properties', async () => {
+        const cql = 'MATCH (n) RETURN n LIMIT 5';
+        const props = await neo4jService.fetchProperties(cql);
+        expect(props.length).toBe(5);
+        expect(props[0].url || props[0].address).toBeTruthy();
       });
     });
 
@@ -70,20 +83,35 @@ describe('AppController', () => {
         expect(urls.length).toBe(2);
       });
     });
+
+    describe('getUserNumLikes', () => {
+      it('should ...', async () => {
+        const likes = await neo4jService.getUserNumLikes([TEST_URL1], TEST_USER1);
+        expect(likes[TEST_URL1]).toBe(20);
+      });
+    });
+
+    describe('getTotalNumLikes', () => {
+      it('should ...', async () => {
+        const likes = await neo4jService.getTotalNumLikes([TEST_URL1]);
+        expect(likes[TEST_URL1]).toBe(20);
+      });
+    });
+
   });
 
   describe('ElasticSearchService', () => {
     describe('getUrlHash', () => {
       it('should hash an URL using MD5', () => {
-        const hash = esService.getUrlHash(TEST_URL);
-        expect(hash).toBe(TEST_URL_MD5);
+        const hash = esService.getUrlHash(TEST_URL1);
+        expect(hash).toBe(TEST_URL1_MD5);
       });
     });
     describe('moreLikeThis', () => {
       it('should return similar documents', async () => {
-        const result = await esService.moreLikeThis([TEST_URL_MD5]);
+        const result = await esService.moreLikeThis([TEST_URL2_MD5]);
         expect(result.numHits).toBe(1);
-        expect(result.hits[0].url).toBe(TEST_URL);
+        expect(result.hits[0].url).toBe(TEST_URL2);
       });
     });
   });
