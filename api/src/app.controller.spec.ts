@@ -14,7 +14,6 @@ const TEST_URL1_MD5 = '0b616d66133e1e57e216fa16ab5b6847';
 const TEST_URL2 = 'https://www.test.com/';
 const TEST_URL2_MD5 = '5ba534e2895f5119fc0bcab447a61104';
 
-
 describe('AppController', () => {
   let appController: AppController;
   let neo4jService: Neo4jService;
@@ -38,7 +37,6 @@ describe('AppController', () => {
   });
 
   describe('Neo4jService', () => {
-
     describe('fetchRecords', () => {
       it('should fetch data from the neo4j database as rows', async () => {
         const cql = 'MATCH (n) RETURN n LIMIT 5';
@@ -86,7 +84,10 @@ describe('AppController', () => {
 
     describe('getUserNumLikes', () => {
       it('should ...', async () => {
-        const likes = await neo4jService.getUserNumLikes([TEST_URL1], TEST_USER1);
+        const likes = await neo4jService.getUserNumLikes(
+          [TEST_URL1],
+          TEST_USER1,
+        );
         expect(likes[TEST_URL1]).toBe(20);
       });
     });
@@ -97,7 +98,6 @@ describe('AppController', () => {
         expect(likes[TEST_URL1]).toBe(20);
       });
     });
-
   });
 
   describe('ElasticSearchService', () => {

@@ -38,22 +38,29 @@ export class AppController {
   @Get('/user/:user/recommend')
   async recommend(@Param() params): Promise<UrlSearch> {
     const user = params.user;
-    console.log('user', user) ;
     const connectedUrls = await this.neo4j.listUrlsByNetwork(user);
-    if ((!connectedUrls) || connectedUrls.length == 0) {
-        return;
+    if (!connectedUrls || connectedUrls.length == 0) {
+      return;
     }
     const hashUrls = connectedUrls.map((x) => this.es.getUrlHash(x.url));
     const result = await this.es.moreLikeThis(hashUrls);
-    if ((!result) || result.numHits == 0) {
-        return;
+    if (!result || result.numHits == 0) {
+      return;
     }
-    const urls = result.hits.map((x) => {return x.url});
-    console.log('urls', urls) ;
-    const userLikes = this.neo4j.getUserNumLikes(urls, user) ;
-    console.log('userLikes', JSON.stringify(userLikes)) ;
-    const totalLikes = this.neo4j.getTotalNumLikes(urls) ;
-    console.log('totalLikes', JSON.stringify(totalLikes)) ;
+    const urls = result.hits.map((x) => {
+      return x.url;
+    });
+    const userLikes = await this.neo4j.getUserNumLikes(urls, user);
+    const totalLikes = await this.neo4j.getTotalNumLikes(urls);
+    for (let i = 0; i < result.hits.length; i++) {
+      const data = result.hits[i];
+      if (userLikes[data.url]) {
+        data.numLikesUser = userLikes[data.url];
+      }
+      if (totalLikes[data.url]) {
+        data.numLikesTotal = totalLikes[data.url];
+      }
+    }
     return result;
   }
 }

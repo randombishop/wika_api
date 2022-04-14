@@ -1,0 +1,10 @@
+- put each service test suite in a separate file
+- add docs and comments all over the source code
+- generate API docs
+- zip databases
+- dockerize
+- readme
+- end to end tests
+- deploy to gcp
+- consume API in app.wika.network
+- medium article

@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import neo4j from 'neo4j-driver';
 import Driver from 'neo4j-driver/lib/driver.js';
 import Url from './types/url';
-import UrlSearch from './types/url_search';
 
 /**
  * Data Access utils for the Neo4j database
@@ -132,7 +131,7 @@ export class Neo4jService {
         WHERE usr.address = $user
         AND url.url in $urls
         RETURN url.url, r.numLikes ;`;
-    const params = { user: user , urls: urls};
+    const params = { user: user, urls: urls };
     const records = await this.fetchRecords(cql, params);
     const ans = {};
     for (let i = 0; i < records.length; i++) {

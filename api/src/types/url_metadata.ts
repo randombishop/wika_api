@@ -6,6 +6,8 @@ export default class UrlMetadata {
   public icon: string;
   public updatedAt: Date;
   public score: number;
+  public numLikesUser: number;
+  public numLikesTotal: number;
 
   constructor(data) {
     this.id = data._id;
