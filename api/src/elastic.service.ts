@@ -52,7 +52,7 @@ export class ElasticSearchService {
   }
 
   /**
-   * Executes the query against the URL index
+   * Executes a query against the URL index
    * @param query - Elastic Search query
    * @returns array of hits as UrlMetadata instances
    */
@@ -61,6 +61,38 @@ export class ElasticSearchService {
       query: {
         query_string: {
           query: query,
+        },
+      },
+    };
+    const rest_path = '/url/_search';
+    const rest_config = {
+      method: 'post',
+      body: JSON.stringify(data),
+    };
+    const response = await this.callApiAndGetResult(rest_path, rest_config);
+    const result = new UrlSearch(response);
+    return result;
+  }
+
+  /**
+   * Executes a more_like_this search against the URL index
+   * @param docs - Array of Url documents ids (MD5 hashes) to use as reference
+   * @returns array of hits as UrlMetadata instances representing similar documents to the inputs
+   */
+  async moreLikeThis(docs: string[]) {
+    const docList = docs.map((x) => {
+      return {
+        _index: 'url',
+        _id: x,
+      };
+    });
+    const data = {
+      query: {
+        more_like_this: {
+          like: docList,
+          include: true,
+          min_term_freq: 1,
+          min_doc_freq: 1,
         },
       },
     };

@@ -5,11 +5,12 @@ import { Neo4jService } from './neo4j.service';
 import { ElasticSearchService } from './elastic.service';
 import Url from './types/url';
 
-const TEST_USER = 'aaaaaaaaaaaaaaa';
+const TEST_USER1 = 'aaaaaaaaaaaaaaa';
+const TEST_USER2 = 'bbbbbbbbbbbbbbb';
 const TEST_QUERY1 = 'test';
 const TEST_QUERY2 = '(test) OR (wika)';
-const TEST_URL = 'https://www.wika.network/';
-const TEST_URL_MD5 = '0b616d66133e1e57e216fa16ab5b6847';
+const TEST_URL = 'https://www.test.com/';
+const TEST_URL_MD5 = '5ba534e2895f5119fc0bcab447a61104';
 
 describe('AppController', () => {
   let appController: AppController;
@@ -55,7 +56,7 @@ describe('AppController', () => {
       it('should throw an error if relation is not LIKES or OWNS', async () => {
         let test = null;
         try {
-          test = await neo4jService.listUrlsByUserRelation(TEST_USER, 'TEST');
+          test = await neo4jService.listUrlsByUserRelation(TEST_USER1, 'TEST');
         } catch (e) {
           expect(e).toBe('Relation must be LIKES or OWNS');
         }
@@ -65,7 +66,7 @@ describe('AppController', () => {
 
     describe('listUrlsByNetwork', () => {
       it('should return 2 connected URLs for the test user', async () => {
-        const urls = await neo4jService.listUrlsByNetwork(TEST_USER);
+        const urls = await neo4jService.listUrlsByNetwork(TEST_USER1);
         expect(urls.length).toBe(2);
       });
     });
@@ -78,18 +79,25 @@ describe('AppController', () => {
         expect(hash).toBe(TEST_URL_MD5);
       });
     });
+    describe('moreLikeThis', () => {
+      it('should return similar documents', async () => {
+        const result = await esService.moreLikeThis([TEST_URL_MD5]);
+        expect(result.numHits).toBe(1);
+        expect(result.hits[0].url).toBe(TEST_URL);
+      });
+    });
   });
 
   describe('listUrlsByLiker', () => {
     it('should return urls liked by a user', async () => {
-      const urls = await appController.listUrlsByLiker({ user: TEST_USER });
+      const urls = await appController.listUrlsByLiker({ user: TEST_USER1 });
       expect(urls.length).toBe(2);
     });
   });
 
   describe('listUrlsByOwner', () => {
     it('should return urls owned by a user', async () => {
-      const urls = await appController.listUrlsByOwner({ user: TEST_USER });
+      const urls = await appController.listUrlsByOwner({ user: TEST_USER1 });
       expect(urls.length).toBe(1);
     });
   });
@@ -112,7 +120,8 @@ describe('AppController', () => {
 
   describe('recommend', () => {
     it('should return a list of recommendations for a user', async () => {
-      const urls = await appController.recommend({ user: TEST_USER });
+      const result = await appController.recommend({ user: TEST_USER2 });
+      expect(result.numHits).toBe(1);
     });
   });
 

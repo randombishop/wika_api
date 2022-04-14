@@ -35,17 +35,13 @@ export class AppController {
   }
 
   @Get('/user/:user/recommend')
-  async recommend(@Param() params): Promise<string> {
-    console.log('recommend');
+  async recommend(@Param() params): Promise<UrlSearch> {
     const user = params.user;
     const connectedUrls = await this.neo4j.listUrlsByNetwork(user);
-    console.log('connectedUrls');
-    console.log(connectedUrls);
     if (connectedUrls && connectedUrls.length > 0) {
       const hashUrls = connectedUrls.map((x) => this.es.getUrlHash(x.url));
-      console.log('hashUrls');
-      console.log(hashUrls);
-      return user;
+      const similarUrls = await this.es.moreLikeThis(hashUrls);
+      return similarUrls;
     } else {
       return null;
     }
