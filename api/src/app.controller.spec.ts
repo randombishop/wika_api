@@ -32,43 +32,41 @@ describe('AppController', () => {
   });
 
   describe('neo4jService', () => {
-
     describe('fetch', () => {
-        it('should fetch data from the neo4j database as nodes', async () => {
-          const cql = 'MATCH (n) RETURN n LIMIT 5';
-          const urls = await neo4jService.fetch(cql);
-          expect(urls.length).toBe(5);
-        });
+      it('should fetch data from the neo4j database as nodes', async () => {
+        const cql = 'MATCH (n) RETURN n LIMIT 5';
+        const urls = await neo4jService.fetch(cql);
+        expect(urls.length).toBe(5);
+      });
     });
 
     describe('fetch2url', () => {
-        it('should fetch data from the neo4j database as nodes', async () => {
-          const cql = 'MATCH (n) RETURN n LIMIT 5';
-          const urls = await neo4jService.fetch2url(cql);
-          expect(urls.length).toBe(5);
-          expect(urls[0] instanceof Url);
-        });
+      it('should fetch data from the neo4j database as nodes', async () => {
+        const cql = 'MATCH (n) RETURN n LIMIT 5';
+        const urls = await neo4jService.fetch2url(cql);
+        expect(urls.length).toBe(5);
+        expect(urls[0] instanceof Url);
+      });
     });
 
     describe('listUrlsByUserRelation', () => {
-        it('should throw an error if relation is not LIKES or OWNS', async () => {
-          let test = null ;
-          try {
-            test = await neo4jService.listUrlsByUserRelation(TEST_USER, 'TEST');
-          } catch (e) {
-            expect(e).toBe("Relation must be LIKES or OWNS");
-          }
-          expect(test).toBeNull();
-        });
+      it('should throw an error if relation is not LIKES or OWNS', async () => {
+        let test = null;
+        try {
+          test = await neo4jService.listUrlsByUserRelation(TEST_USER, 'TEST');
+        } catch (e) {
+          expect(e).toBe('Relation must be LIKES or OWNS');
+        }
+        expect(test).toBeNull();
+      });
     });
 
     describe('listUrlsByNetwork', () => {
-        it('should return 2 connected URLs for the test user', async () => {
-          const urls = await neo4jService.listUrlsByNetwork(TEST_USER);
-          expect(urls.length).toBe(2);
-        });
+      it('should return 2 connected URLs for the test user', async () => {
+        const urls = await neo4jService.listUrlsByNetwork(TEST_USER);
+        expect(urls.length).toBe(2);
+      });
     });
-
   });
 
   describe('listUrlsByLiker', () => {

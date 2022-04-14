@@ -46,7 +46,7 @@ export class Neo4jService {
    * @param params - Parameters of the CQL query as a dictionary, for example `{url: 'https://example.com'}`
    * @returns results as Url instances, null otherwise
    */
-  async fetch2url(cql: string, params: object=null) {
+  async fetch2url(cql: string, params: object = null) {
     const data = await this.fetch(cql, params);
     if (data) {
       const urls = data.map((x) => new Url(x));
