@@ -11,7 +11,7 @@ export default class UrlSearch {
   @ApiProperty()
   public maxScore: number;
 
-  @ApiProperty()
+  @ApiProperty({isArray: true,type:UrlMetadata})
   public hits: UrlMetadata[];
 
   constructor(data) {

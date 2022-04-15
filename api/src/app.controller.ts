@@ -42,6 +42,7 @@ export class AppController {
   @ApiResponse({
     status: 200,
     description: 'Array of Urls liked by the specified user',
+    isArray: true,
     type: Url,
   })
   listUrlsByLiker(@Param() params): Promise<Url[]> {
@@ -50,6 +51,19 @@ export class AppController {
   }
 
   @Get('/user/:user/owned_urls')
+  @ApiOperation({ summary: 'List the Urls owned by a user' })
+  @ApiParam({
+    name: 'user',
+    description: 'Address of the user',
+    example: '5HMaX8cQefCrvhwAZKbeqiWEaYB29jHryyodBxoAoggFf38L',
+  })
+  @ApiProduces('application/json')
+  @ApiResponse({
+    status: 200,
+    description: 'Array of Urls owned by the specified user',
+    isArray: true,
+    type: Url,
+  })
   listUrlsByOwner(@Param() params): Promise<Url[]> {
     const user = params.user;
     return this.neo4j.listUrlsByOwner(user);
@@ -83,6 +97,22 @@ export class AppController {
   }
 
   @Get('/user/:user/recommend')
+  @ApiOperation({
+    summary: `Generate recommendations for a specific user based on their Likes/Ownerships,
+              network connections, and keywords`,
+  })
+  @ApiParam({
+    name: 'user',
+    description:
+      'Address of the user',
+    example: '5HMaX8cQefCrvhwAZKbeqiWEaYB29jHryyodBxoAoggFf38L',
+  })
+  @ApiProduces('application/json')
+  @ApiResponse({
+    status: 200,
+    description: 'Search results',
+    type: UrlSearch,
+  })
   async recommend(@Param() params): Promise<UrlSearch> {
     const user = params.user;
     const connectedUrls = await this.neo4j.listUrlsByNetwork(user);
