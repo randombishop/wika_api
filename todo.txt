@@ -1,4 +1,3 @@
-- put each service test suite in a separate file
 - add docs and comments all over the source code
 - zip databases
 - dockerize
