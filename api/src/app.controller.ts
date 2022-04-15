@@ -103,8 +103,7 @@ export class AppController {
   })
   @ApiParam({
     name: 'user',
-    description:
-      'Address of the user',
+    description: 'Address of the user',
     example: '5HMaX8cQefCrvhwAZKbeqiWEaYB29jHryyodBxoAoggFf38L',
   })
   @ApiProduces('application/json')
