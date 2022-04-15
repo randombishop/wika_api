@@ -1,5 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+/**
+ * Url data object containing the url string, the MD% hash as the id,
+ * and the fields available in the elastic search database
+ */
 export default class UrlMetadata {
   @ApiProperty()
   public id: string;
@@ -28,6 +32,9 @@ export default class UrlMetadata {
   @ApiProperty()
   public numLikesTotal: number;
 
+  /**
+   * The constructor takes the object returned by Elastic Search API and fills in the fields
+   */
   constructor(data) {
     this.id = data._id;
     this.url = data._source.url;

@@ -56,16 +56,12 @@ export class Neo4jService {
    * and converts results to Url instances
    * @param cql - CQL query, for example `MATCH (a:Url {url: $url}) RETURN a`
    * @param params - Parameters of the CQL query as a dictionary, for example `{url: 'https://example.com'}`
-   * @returns results as Url instances, null otherwise
+   * @returns results as Url instances
    */
   async fetch2url(cql: string, params: object = null) {
     const data = await this.fetchProperties(cql, params);
-    if (data) {
-      const urls = data.map((x) => new Url(x));
-      return urls;
-    } else {
-      return null;
-    }
+    const urls = data.map((x) => new Url(x));
+    return urls;
   }
 
   /**
@@ -106,15 +102,20 @@ export class Neo4jService {
 
   /**
    * List the URLs related to users who like or own common URLs with the target address
+   * For example, if the specified user U1 liked a website,
+   * and the same website was liked or owned by a another user U2, all Urls connected to U2 are considered connected.
+   * The function also orders all connected Urls by total number of likes, and returns the top ones.
    * @param user - Address of the user
+   * @param limit - Number of results to return, defaults to the top 100
    * @returns urls as URL instances
    */
-  async listUrlsByNetwork(user: string): Promise<Url[]> {
-    const cql = `
+  async listUrlsByNetwork(user: string, limit = 100): Promise<Url[]> {
+    const cql =
+      `
         MATCH (user1:User{address:$user})-[]->(url1:Url)<-[]-(user2:User)-[]->(url2:Url)
         RETURN distinct url2
         ORDER BY url2.numLikes DESC
-        LIMIT 100 ;`;
+        LIMIT ` + limit;
     const params = { user: user };
     return this.fetch2url(cql, params);
   }

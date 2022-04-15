@@ -7,8 +7,7 @@ import fetch from 'node-fetch';
 const crypto = require('crypto');
 
 /**
- * Data Access utils for the Neo4j database
- *
+ * Data Access utils for the Elastic Search database
  */
 @Injectable()
 export class ElasticSearchService {
@@ -53,6 +52,8 @@ export class ElasticSearchService {
 
   /**
    * Executes a query against the URL index
+   * for examples, formats and options supported by Elastic Search engine in the query string,
+   * refer to https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html
    * @param query - Elastic Search query
    * @returns array of hits as UrlMetadata instances
    */
@@ -76,6 +77,8 @@ export class ElasticSearchService {
 
   /**
    * Executes a more_like_this search against the URL index
+   * for more details on the capabilities of this feature in Elastic Search engine,
+   * refer to https://www.elastic.co/guide/en/elasticsearch/reference/master/query-dsl-mlt-query.html
    * @param docs - Array of Url documents ids (MD5 hashes) to use as reference
    * @returns array of hits as UrlMetadata instances representing similar documents to the inputs
    */

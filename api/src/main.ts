@@ -3,6 +3,10 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
+/**
+ * NestJS boilerplate code to start the API server
+ * and integrate Swagger documentation
+ */
 async function bootstrap() {
   // Create Nest APP
   const app = await NestFactory.create(AppModule);

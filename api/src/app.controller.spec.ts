@@ -47,15 +47,24 @@ describe('AppController', () => {
 
   describe('searchUrls', () => {
     it('should return an UrlSearch instance with numHits>0 and same number of documents', async () => {
-      const result = await appController.searchUrls({ query: TEST_QUERY1 });
+      const result = await appController.searchUrls({
+        user: TEST_USER1,
+        query: TEST_QUERY1,
+      });
       expect(result.numHits).toBeGreaterThan(0);
       expect(result.hits.length).toBe(result.numHits);
     });
 
     it('should return more results when adding an OR clause', async () => {
-      const result1 = await appController.searchUrls({ query: TEST_QUERY1 });
+      const result1 = await appController.searchUrls({
+        user: TEST_USER1,
+        query: TEST_QUERY1,
+      });
       const numHits1 = result1.numHits;
-      const result2 = await appController.searchUrls({ query: TEST_QUERY2 });
+      const result2 = await appController.searchUrls({
+        user: TEST_USER2,
+        query: TEST_QUERY2,
+      });
       const numHits2 = result2.numHits;
       expect(numHits2).toBeGreaterThan(numHits1);
     });

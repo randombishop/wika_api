@@ -1,4 +1,3 @@
-- zip databases
 - add docs and comments all over the source code
 - readme
 - end to end tests
