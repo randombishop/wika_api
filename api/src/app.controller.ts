@@ -3,8 +3,17 @@ import { Neo4jService } from './neo4j.service';
 import { ElasticSearchService } from './elastic.service';
 import Url from './types/url';
 import UrlSearch from './types/url_search';
+import {
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiProduces,
+  ApiTags,
+} from '@nestjs/swagger';
+
 
 @Controller()
+@ApiTags('wika')
 export class AppController {
   constructor(
     private readonly neo4j: Neo4jService,
@@ -12,11 +21,26 @@ export class AppController {
   ) {}
 
   @Get('/ping')
+  @ApiOperation({summary: 'Healthcheck'})
+  @ApiProduces('text/plain')
+  @ApiResponse({
+    status: 200,
+    description: 'Healthcheck endpoint',
+    schema: {type: 'string', example: 'pong'}
+  })
   ping(): string {
     return 'pong';
   }
 
   @Get('/user/:user/liked_urls')
+  @ApiOperation({summary: 'List the Urls liked by a user'})
+  @ApiParam({name:'user', description:'address of the user', example:'5HMaX8cQefCrvhwAZKbeqiWEaYB29jHryyodBxoAoggFf38L'})
+  @ApiProduces('application/json')
+  @ApiResponse({
+    status: 200,
+    description: 'Array of Urls liked by the specified user',
+    type: Url
+  })
   listUrlsByLiker(@Param() params): Promise<Url[]> {
     const user = params.user;
     return this.neo4j.listUrlsByLiker(user);
