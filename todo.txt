@@ -1,6 +1,7 @@
+- pin dependencies
+- dockerize
 - add docs and comments all over the source code
 - zip databases
-- dockerize
 - readme
 - end to end tests
 - deploy to gcp

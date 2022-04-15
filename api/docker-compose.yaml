@@ -1,0 +1,14 @@
+version: '3'
+services:
+  api:
+    build: .
+    environment:
+      NEO4J_HOST: "bolt://host.docker.internal"
+      NEO4J_USER: "neo4j"
+      NEO4J_PASS: "1234"
+      ES_HOST: "http://host.docker.internal:9200"
+      ES_USER: "elastic"
+      ES_PASS: "abcd"
+    ports:
+      - 3000:3000
+    command: yarn start
