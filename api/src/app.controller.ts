@@ -11,7 +11,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-
 @Controller()
 @ApiTags('wika')
 export class AppController {
@@ -21,25 +20,29 @@ export class AppController {
   ) {}
 
   @Get('/ping')
-  @ApiOperation({summary: 'Healthcheck'})
+  @ApiOperation({ summary: 'Healthcheck' })
   @ApiProduces('text/plain')
   @ApiResponse({
     status: 200,
     description: 'Healthcheck endpoint',
-    schema: {type: 'string', example: 'pong'}
+    schema: { type: 'string', example: 'pong' },
   })
   ping(): string {
     return 'pong';
   }
 
   @Get('/user/:user/liked_urls')
-  @ApiOperation({summary: 'List the Urls liked by a user'})
-  @ApiParam({name:'user', description:'address of the user', example:'5HMaX8cQefCrvhwAZKbeqiWEaYB29jHryyodBxoAoggFf38L'})
+  @ApiOperation({ summary: 'List the Urls liked by a user' })
+  @ApiParam({
+    name: 'user',
+    description: 'Address of the user',
+    example: '5HMaX8cQefCrvhwAZKbeqiWEaYB29jHryyodBxoAoggFf38L',
+  })
   @ApiProduces('application/json')
   @ApiResponse({
     status: 200,
     description: 'Array of Urls liked by the specified user',
-    type: Url
+    type: Url,
   })
   listUrlsByLiker(@Param() params): Promise<Url[]> {
     const user = params.user;
@@ -53,6 +56,26 @@ export class AppController {
   }
 
   @Get('/user/:user/search/:query')
+  @ApiOperation({
+    summary: 'Execute a search query against the elastic search Url index',
+  })
+  @ApiParam({
+    name: 'user',
+    description:
+      'Address of the user, will be used to populate the number of likes',
+    example: '5HMaX8cQefCrvhwAZKbeqiWEaYB29jHryyodBxoAoggFf38L',
+  })
+  @ApiParam({
+    name: 'query',
+    description: 'Elastic Search compatible query',
+    example: '(test) OR (wika)',
+  })
+  @ApiProduces('application/json')
+  @ApiResponse({
+    status: 200,
+    description: 'Search results',
+    type: UrlSearch,
+  })
   searchUrls(@Param() params): Promise<UrlSearch> {
     const query = params.query;
     const urls = this.es.searchUrls(query);

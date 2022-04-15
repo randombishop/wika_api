@@ -1,9 +1,17 @@
+import { ApiProperty } from '@nestjs/swagger';
 import UrlMetadata from './url_metadata';
 
 export default class UrlSearch {
+  @ApiProperty()
   public took: number;
+
+  @ApiProperty()
   public numHits: number;
+
+  @ApiProperty()
   public maxScore: number;
+
+  @ApiProperty()
   public hits: UrlMetadata[];
 
   constructor(data) {
