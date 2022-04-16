@@ -135,7 +135,7 @@ yarn format
 yarn lint
 ```
 
-## Running the tests
+### Running the tests
 ```
 yarn test
 ```
