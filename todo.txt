@@ -1,5 +1,3 @@
-- add docs and comments all over the source code
-- readme
 - end to end tests
 - deploy to gcp
 - consume API in app.wika.network
