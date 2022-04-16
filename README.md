@@ -7,7 +7,7 @@ Current version comes with 5 operations:
 * `/user/:user/liked_urls` => List the Urls liked by a user
 * `/user/:user/owned_urls` => List the Urls owned by a user
 * `/user/:user/search/:query` => Execute a search query against the elastic search Url index
-* `/user/:user/recommend` => Generate recommendations for a specific user based on their Likes/Ownerships
+* `/user/:user/recommend` => Generate recommendations for a specific user based on their Likes/Ownerships, network connections, and keywords
 
 The repo was developed with [NestJS framework](https://docs.nestjs.com/).
 
