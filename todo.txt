@@ -1,4 +1,0 @@
-- end to end tests
-- deploy to gcp
-- consume API in app.wika.network
-- medium article
