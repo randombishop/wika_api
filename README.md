@@ -69,10 +69,11 @@ Go to `test_db` folder
 
 ```cd test_db```
 
-Unzip the provided `data.tar.gz`
+Unzip the provided `data.tar.gz` and fix rights on es folder
 
 ```
 tar -xf data.tar.gz
+sudo chown -R 1000:1000 .data/es
 ```
 
 Start with `docker-compose`
