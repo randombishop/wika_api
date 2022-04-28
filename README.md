@@ -112,7 +112,7 @@ you can simply copy it into `.env` to get started.
 (`.env` file is part of `.gitignore` to exclude users' credentials from the github repo.)
 
 ```
-cp .env-example .env .
+cp .env-example .env
 ```
 
 
